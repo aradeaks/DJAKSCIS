@@ -24,7 +24,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
- * @author Aradea
+ * @author Aradea Krisnaraga & Daniel Januar
  */
 public class EnkripGUI implements ActionListener {	
 	JPanel menu;
@@ -40,6 +40,7 @@ public class EnkripGUI implements ActionListener {
 	JFileChooser fc;
 	File plainFile;
 	File keyFile;
+	int[] enkripsi;
 	
 	public JPanel menuList() {					
 		plaintext = new JButton("File Plaintext");
@@ -132,7 +133,11 @@ public class EnkripGUI implements ActionListener {
 			}
 			log.setCaretPosition(log.getDocument().getLength());
 		} catch (FileNotFoundException fne) {
-			JOptionPane.showMessageDialog(null, "File tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
+			if (fne.getMessage() == null) {
+				JOptionPane.showMessageDialog(null, "File tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, fne.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
 			log.append("FileNotFoundException tertangkap\n");
 		} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat membaca file!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -143,32 +148,41 @@ public class EnkripGUI implements ActionListener {
 		}
  	}
 
- 	public void startEncrypt() throws IOException { 		
-		if (plainFile == null || keyFile == null)	throw new FileNotFoundException();
+ 	public void startEncrypt() throws FileNotFoundException, IOException { 		
+		if (plainFile == null || keyFile == null) throw new FileNotFoundException("Plaintext / key tidak ditemukan!");
 		FileInputStream fis = new FileInputStream(plainFile);
+		log.append("Isi plaintext: ");
 		int[] M = new int[fis.available()];
 		for (int i = 0; i < M.length; i++) {
 			M[i] = fis.read();
-			log.append(String.valueOf(M[i]));
+			log.append(String.valueOf((char)M[i]));
 		}				
 		fis.close();
 		log.append("\n");
 		
 		fis = new FileInputStream(keyFile);
+		log.append("Isi key: ");
 		byte[] K = new byte[fis.available()];
 		for (int i = 0; i < K.length; i++) {
 			K[i] = (byte) fis.read();
-			log.append(String.valueOf(K[i]));
+			log.append(String.valueOf((char)K[i]));
 		}
 		fis.close();
 		log.append("\n");
 		
-		log.append("Memulai enkripsi " + plainFile.getName() + " dengan key " + keyFile.getName() + "\n");
-
-		//TO-DO mulai panggil method enkripsi dari RC4Kripto.java
+		log.append("\nMemulai enkripsi " + plainFile.getName() + " dengan key " + keyFile.getName() + "\n");
+		RC4Kripto rc = new RC4Kripto();
+		rc.permuteS(K);
+		enkripsi = rc.encryption(M, K);
+		log.append("Hasil enkripsi (dalam hexadecimal): ");
+		for (int i = 0; i < enkripsi.length; i++) {
+            log.append(Integer.toHexString(enkripsi[i]));
+        }
+		log.append("\n\n");
  	}
 
- 	public void saveFile() throws IOException, Exception {
+ 	public void saveFile() throws FileNotFoundException, Exception {
+		if (enkripsi == null) throw new FileNotFoundException("Hasil enkripsi tidak ditemukan!");
  		int returnVal = fc.showSaveDialog(menu);
 		File file = fc.getSelectedFile();
 		if (!file.getName().endsWith("txt")) throw new Exception();

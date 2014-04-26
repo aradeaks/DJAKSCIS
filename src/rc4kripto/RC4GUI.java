@@ -14,13 +14,13 @@ import javax.swing.border.EmptyBorder;
 
 /**
  *
- * @author Aradea
+ * @author Aradea Krisnaraga & Daniel Januar
  */
 public class RC4GUI extends JFrame {
 	
 	private static final int FRAME_WIDTH = 650;
     private static final int FRAME_HEIGHT = 450;
-    private static final int BORDER_WIDTH = 15;
+    private static final int BORDER_WIDTH = 5;
 	
 	public RC4GUI(String title) {
         super(title);

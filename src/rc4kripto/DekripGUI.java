@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 
 /**
  *
- * @author Aradea
+ * @author Aradea Krisnaraga & Daniel Januar
  */
 public class DekripGUI {	
 	JPanel menu;
