@@ -6,12 +6,15 @@
 
 package rc4kripto;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 /**
  *
  * @author daniel.januar
  */
 public class RC4Kripto {
-
     private int[][] S;
 
     public RC4Kripto() {
@@ -26,8 +29,9 @@ public class RC4Kripto {
         int[] m = new int[]{0xA5,0xE3,0x89,0xF1};
         byte[] k = "PEMILU".getBytes();
         rc.permuteS(k);
-        int[] enc = rc.decryption(m, k);
-        int[] dec = rc.decryption(enc, k);
+        int[] enc = rc.encryption(m, k);
+        rc.permuteS(k);
+        int[] dec = rc.encryption(enc, k);
         String hasil = "";
         for (int i = 0; i < dec.length; i++) {
             hasil += Integer.toHexString(dec[i]);
@@ -35,13 +39,13 @@ public class RC4Kripto {
         System.out.println(hasil);
     }
     
-    public int[] encryption(byte[] plaintext, byte[] key){
-        String str = new String(plaintext);
-        System.out.println("Plaintext: " + str);
-        
-        str = new String(key);
-        System.out.println("Key: " + str);
-        
+    public int[] encryption(int[] plaintext, byte[] key){
+//        String str = new String(plaintext);
+//        System.out.println("Plaintext: " + str);
+//        
+//        str = new String(key);
+//        System.out.println("Key: " + str);
+//        
         for (int i = 0; i < S.length; i++) {
             for (int j = 0; j < S[i].length; j++) {
                 System.out.print(S[i][j] + "|");
