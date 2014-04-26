@@ -16,6 +16,10 @@ public class RC4Kripto {
     public RC4Kripto() {
         S = new int[26][10];
     }
+
+    public int[][] getS() {
+        return S;
+    }
     
     /**
      * @param args the command line arguments
