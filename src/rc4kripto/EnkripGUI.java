@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -185,9 +186,15 @@ public class EnkripGUI implements ActionListener {
 		if (enkripsi == null) throw new FileNotFoundException("Hasil enkripsi tidak ditemukan!");
  		int returnVal = fc.showSaveDialog(menu);
 		File file = fc.getSelectedFile();
+                String path = file.getAbsolutePath();
+                FileOutputStream fos = new FileOutputStream(file);
 		if (!file.getName().endsWith("txt")) throw new Exception();
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			log.append("Menyimpan: " + file.getName() + "\n");
+                        for(int ii=0;ii<enkripsi.length;ii++){
+                            fos.write(enkripsi[ii]);
+                        }
+                        fos.close();
 		} else {
 			log.append("Perintah simpan dibatalkan\n");
 		}
