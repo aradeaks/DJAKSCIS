@@ -4,23 +4,29 @@
  */
 package rc4kripto;
 
-import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author Aradea
  */
-public class EnkripGUI {	
+public class EnkripGUI implements ActionListener {	
 	JPanel menu;
 	GroupLayout layout;
 	JButton plaintext;
@@ -29,57 +35,38 @@ public class EnkripGUI {
 	JButton save;
 	JTextField pathPlain;
 	JTextField pathKey;
-	JTextArea textArea;
-	JScrollPane scrollText;
+	JTextArea log;
+	JScrollPane scrollText;	
+	JFileChooser fc;
+	File plainFile;
+	File keyFile;
 	
-	public JPanel menuList()
-	{					
+	public JPanel menuList() {					
 		plaintext = new JButton("File Plaintext");
-		plaintext.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed (ActionEvent e)
-			{
-				//setTableContent();
-			}
-		});
+		plaintext.addActionListener(this);
 		
 		key = new JButton("File Key");
-		key.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed (ActionEvent e)
-			{
-				//setTableContent();
-			}
-		});
+		key.addActionListener(this);
 		
 		encrypt = new JButton("Mulai Enkripsi");
-		encrypt.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed (ActionEvent e)
-			{
-				//setTableContent();
-			}
-		});
+		encrypt.addActionListener(this);
 		
 		save = new JButton("Simpan Hasil");
-		save.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed (ActionEvent e)
-			{
-				//setTableContent();
-			}
-		});
+		save.addActionListener(this);
 		
 		pathPlain = new JTextField(2);
 		pathKey = new JTextField(2);
 		pathPlain.setEditable(false);
 		pathKey.setEditable(false);
 		
-		textArea = new JTextArea(8, 22);
-        textArea.setBorder(BorderFactory.createLineBorder(Color.black));
-        textArea.setEditable(false);
+		log = new JTextArea(8, 22);
+        log.setEditable(false);
+        log.setMargin(new Insets(5,5,5,5));
 		
-		scrollText = new JScrollPane(textArea);
+		scrollText = new JScrollPane(log);
+		fc = new JFileChooser("D:");		
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setFileFilter(new FileNameExtensionFilter("Text (*.txt)", "txt"));
 		
 		JLabel text = new JLabel("Pilih File: ");
 		menu = new JPanel();
@@ -90,7 +77,7 @@ public class EnkripGUI {
 		layout.setHorizontalGroup(
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-					.addComponent(textArea)
+					.addComponent(scrollText)
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(text))
@@ -113,9 +100,84 @@ public class EnkripGUI {
 					.addComponent(key))
 				.addComponent(encrypt)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					.addComponent(textArea)
+					.addComponent(scrollText)
 					.addComponent(save, GroupLayout.Alignment.CENTER))
 		);
 		return menu;
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		try {
+			if (e.getSource() == save) {
+				saveFile();
+			} else if (e.getSource()== encrypt) {
+				startEncrypt();
+			} else {
+				int returnVal = fc.showOpenDialog(menu);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					if (!file.getName().endsWith("txt")) throw new Exception();
+					log.append("Membuka: " + file.getName() + "\n");
+					if (e.getSource() == plaintext) {
+						plainFile = file;						
+						pathPlain.setText(file.getAbsolutePath());
+					} else if (e.getSource() == key) {
+						keyFile = file;
+						pathKey.setText(file.getAbsolutePath());
+					}
+				} else {
+					log.append("Perintah buka dibatalkan\n");
+				}
+			}
+			log.setCaretPosition(log.getDocument().getLength());
+		} catch (FileNotFoundException fne) {
+			JOptionPane.showMessageDialog(null, "File tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
+			log.append("FileNotFoundException tertangkap\n");
+		} catch (IOException ex) {
+			JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat membaca file!", "Error", JOptionPane.ERROR_MESSAGE);
+			log.append("IOException tertangkap\n");
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, "Hanya dapat menerima file berformat .txt!", "Error", JOptionPane.ERROR_MESSAGE);
+			log.append("Exception tertangkap\n");
+		}
+ 	}
+
+ 	public void startEncrypt() throws IOException { 		
+		if (plainFile == null || keyFile == null)	throw new FileNotFoundException();
+		FileInputStream fis = new FileInputStream(plainFile);
+		int[] M = new int[fis.available()];
+		for (int i = 0; i < M.length; i++) {
+			M[i] = fis.read();
+			log.append(String.valueOf(M[i]));
+		}				
+		fis.close();
+		log.append("\n");
+		
+		fis = new FileInputStream(keyFile);
+		byte[] K = new byte[fis.available()];
+		for (int i = 0; i < K.length; i++) {
+			K[i] = (byte) fis.read();
+			log.append(String.valueOf(K[i]));
+		}
+		fis.close();
+		log.append("\n");
+		
+		log.append("Memulai enkripsi " + plainFile.getName() + " dengan key " + keyFile.getName() + "\n");
+
+		//TO-DO mulai panggil method enkripsi dari RC4Kripto.java
+ 	}
+
+ 	public void saveFile() throws IOException, Exception {
+ 		int returnVal = fc.showSaveDialog(menu);
+		File file = fc.getSelectedFile();
+		if (!file.getName().endsWith("txt")) throw new Exception();
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			log.append("Menyimpan: " + file.getName() + "\n");
+		} else {
+			log.append("Perintah simpan dibatalkan\n");
+		}
+		
+		//TO-DO simpan file S-box serta hasil enkripsi
+ 	}
 }

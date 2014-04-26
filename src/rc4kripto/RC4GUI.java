@@ -18,17 +18,15 @@ import javax.swing.border.EmptyBorder;
  */
 public class RC4GUI extends JFrame {
 	
-	private static final int FRAME_WIDTH = 520;
-    private static final int FRAME_HEIGHT = 400;
+	private static final int FRAME_WIDTH = 650;
+    private static final int FRAME_HEIGHT = 450;
     private static final int BORDER_WIDTH = 15;
 	
-	public RC4GUI(String title)
-    {
+	public RC4GUI(String title) {
         super(title);
     }
 	
-	public void initGUI()
-    {
+	public void initGUI() {
         //Mengatur ukuran JFrame agar tidak dapat diubah
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,8 +44,7 @@ public class RC4GUI extends JFrame {
         setVisible(true);
     }
 
-	private JTabbedPane createTab()
-    {
+	private JTabbedPane createTab() {
         //Menginisialisasi sebuah objek JTabbedPane bernama tab
         JTabbedPane tab = new JTabbedPane();
         //Menambahkan tiga buah tab ke dalam tab
