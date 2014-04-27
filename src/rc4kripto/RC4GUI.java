@@ -184,6 +184,7 @@ public class RC4GUI implements ActionListener {
 		
 		fis = new FileInputStream(keyFile);
 		if (fis.available() == 0) throw new Exception("File input kosong!");
+		if (fis.available() < 16) throw new Exception("Panjang key kurang dari 128 bit!");
 		
 		log.append("Isi key: ");
 		byte[] K = new byte[fis.available()];
