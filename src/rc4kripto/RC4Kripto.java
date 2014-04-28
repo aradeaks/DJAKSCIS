@@ -21,13 +21,13 @@ public class RC4Kripto {
         return S;
     }
     
-    public int[] encryption(int[] plaintext, byte[] key){
-        
+    public int[] encryption(int[] plaintext, byte[] key){        
         int[] res = new int[plaintext.length];
         int jj = 0;
-        for(int ii = 0; ii< plaintext.length;){
-            ii = (ii+1) % 256;
-            int[] index = getIndexS(ii);
+		int kk = 0;
+        for(int ii = 0; ii< plaintext.length; ii++){
+            kk = (ii+1) % 256;
+            int[] index = getIndexS(kk);
             jj = (jj+ S[index[0]][index[1]]) % 256;
             int[] indexjj = getIndexS(jj);
             S[index[0]][index[1]] ^= S[indexjj[0]][indexjj[1]];
@@ -35,9 +35,8 @@ public class RC4Kripto {
             S[index[0]][index[1]] ^= S[indexjj[0]][indexjj[1]];
             int t = (S[index[0]][index[1]] + S[indexjj[0]][indexjj[1]]) % 256;
             index = getIndexS(t);
-            res[ii-1] = plaintext[ii-1] ^ S[index[0]][index[1]];
-        }
-        
+            res[ii] = plaintext[ii] ^ S[index[0]][index[1]];
+        }        
         return res;
     }
     
