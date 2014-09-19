@@ -13,7 +13,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
 /**
- *
+ *	Testing JazzHub - GitHub
  * @author Aradea Krisnaraga & Daniel Januar
  */
 public class MainGUI extends JFrame {
